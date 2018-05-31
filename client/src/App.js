@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import "./App.css";
 // import Main from "./components/Main";
 import { BrowserRouter, Switch, Route } from "react-router-dom"
-import AddressContainer from "./containers/AddressContainer";
 import StartsContainer from "./containers/StartsContainer";
 import Navbar from "./components/Navbar";
 import CreateStartContainer from "./containers/CreateStartContainer";
 import ClientContainer from "./containers/ClientContainer";
 import CitySubContainer from "./containers/CitySubContainer";
 import JobNumberSeqContainer from "./containers/JobNumberSeqContainer";
+import GetNextJobNumberContainer from "./containers/GetNextJobNumberContainer";
 
 
 class App extends Component {
@@ -37,12 +37,12 @@ class App extends Component {
           <div>
             <Navbar />
             <Switch>
-              <Route path="/addresses/:id" component={AddressContainer} />
               <Route path="/create" component={CreateStartContainer} />
               <Route path="/starts" component={StartsContainer} />
               <Route path="/clients" component={ClientContainer} />
               <Route path="/citySubs" component={CitySubContainer} />
               <Route path="/jobNumberSeqs" component={JobNumberSeqContainer} />
+              <Route path="/getnextjobnumber" component={GetNextJobNumberContainer} />
 
             </Switch>
           </div>

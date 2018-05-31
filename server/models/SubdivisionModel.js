@@ -16,9 +16,15 @@ const SubdivisionModel = {
     return sql().query(SQLstmt, [id], callback);
   },
 
+  // This function handles BOTH ADD and UPDATE.
+  // Basically an UPSERT feature.
   addSubdivision: function(subdivision, callback){
-    const SQLstmt = 'insert into subdivisions (subdivision, city_id, created_by, last_updated_by) values(?, ?, ?, ?)';
-    const values = [subdivision.subdivision, subdivision.city_id, subdivision.created_by, subdivision.last_updated_by];
+    const SQLstmt = 'insert into subdivisions'
+      + ' (id, subdivision, city_id, created_by, last_updated_by)'
+      + ' values(?, ?, ?, ?, ?)'
+      + ' on duplicate key update subdivision = ?, city_id = ?, last_updated_by = ?';
+    const values = [subdivision.id, subdivision.subdivision, subdivision.city_id, subdivision.created_by, subdivision.last_updated_by,
+      subdivision.subdivision, subdivision.city_id, subdivision.last_updated_by];
     return sql().query(SQLstmt, values, callback);
   },
 
@@ -27,6 +33,7 @@ const SubdivisionModel = {
     return sql().query(SQLstmt, [id], callback);
   },
 
+  // right now, not using.  Leveraging the upsert functionality MySQL has.  See add.
   updateSubdivision: function(subdivision, callback){
     const SQLstmt = 'update subdivisions set subdivision = ?, city_id = ?, last_updated_by = ? where id = ?';
     const values = [subdivision.subdivision, subdivision.city_id, subdivision.last_updated_by, subdivision.id];

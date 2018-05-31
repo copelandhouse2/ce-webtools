@@ -1,20 +1,21 @@
 import { connect } from "react-redux";
 import Client from "../components/Client";
-import { createAddress } from "../actions";
+import { createClient, deleteClient } from "../actions";
 
 function mapStateToProps(state) {
   return {
-    clients: state.clients,
-    cities: state.cities,
-    subdivisions: state.subdivisions,
-    jobnumberseqs: state.jobnumberseqs
+    session: state.session,
+    clients: state.clients
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    createAddress: (address)=> {
-      dispatch(createAddress(address));
+    createClient: (client)=> {
+      dispatch(createClient(client));
+    },
+    deleteClient: (id)=> {
+      dispatch(deleteClient(id));
     }
   };
 }

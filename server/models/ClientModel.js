@@ -11,11 +11,18 @@ const ClientModel = {
     return sql().query(SQLstmt, [id], callback);
   },
 
+  // This function handles BOTH ADD and UPDATE.
+  // Basically an UPSERT feature.
   addClient: function(client, callback){
-    const SQLstmt = 'insert into clients (name, full_name, compliance_dl, active, notes, created_by, last_updated_by)'
-      + ' values(?, ?, ?, ?, ?, ?, ?)';
-    const values = [client.name, client.full_name, client.compliance_dl, client.active
-      , client.notes, client.created_by, client.last_updated_by];
+    const SQLstmt = 'insert into clients'
+      + ' (id, name, full_name, compliance_dl, active, notes, created_by, last_updated_by)'
+      + ' values (?, ?, ?, ?, ?, ?, ?, ?)'
+      + ' on duplicate key update name = ?, full_name = ?, compliance_dl = ?, active = ?, notes = ?, last_updated_by = ?';
+
+    const values = [client.id, client.name, client.full_name, client.compliance_dl, client.active
+      , client.notes, client.created_by, client.last_updated_by
+      , client.name, client.full_name, client.compliance_dl, client.active
+      , client.notes, client.last_updated_by];
     return sql().query(SQLstmt, values, callback);
   },
 
@@ -24,6 +31,7 @@ const ClientModel = {
     return sql().query(SQLstmt, [id], callback);
   },
 
+  // right now, not using.  Leveraging the upsert functionality MySQL has.  See add.
   updateClient: function(client, callback){
     const SQLstmt = 'update clients set name = ?, full_name = ?, compliance_dl = ?, active = ?'
       + ', notes = ?, last_updated_by = ? where id = ?';

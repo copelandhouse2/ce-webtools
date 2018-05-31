@@ -1,473 +1,253 @@
 import React, { Component } from "react";
-import { Grid, Row, Col, FormControl, Button, FormGroup, ControlLabel, InputGroup } from "react-bootstrap";
+import { Label, Table, Grid, Row, Col, FormControl, Button, FormGroup, ControlLabel, InputGroup } from "react-bootstrap";
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { loadJobNumberSeqs } from "../actions";
 
-class CreateStart extends Component {
+class Client extends Component {
   constructor() {
     super();
     this.state = {
-      job_number: "",
-      client_id: null,
-      client: "",
-      owner_id: null,
-      owner: "",
-      city_id: null,
-      city: "",
-      subdivision_id: null,
-      subdivision: "",
-      address1: "",
-      address2: "",
-      phase: "",
-      section: "",
-      lot: "",
-      block: "",
-      fnd_height_fr: null,
-      fnd_height_fl: null,
-      fnd_height_rr: null,
-      fnd_height_rl: null,
-      plan_type: "",
-      elevation: "",
-      masonry: null,
-      garage_type: "",
-      garage_entry: "",
-      garage_swing: "",
-      garage_drop: null,
-      garage_extension: null,
-      covered_patio: "",
-      bay_window: "",
-      master_shower_drop: "",
-      bath1_shower_drop: "",
-      bath2_shower_drop: "",
-      bath3_shower_drop: "",
-      additional_options: "",
-      comments: ""
-    }
-    this.stagedStarts = [];
+      id: null,
+      name: "",
+      full_name: "",
+      compliance_dl: "",
+      active: "",
+      notes: "",
+      created_by: "",
+      last_updated_by: ""
+    };
+
+    this.client_init = {...this.state};
+
   }
+
+  getClientID() {
+    
+    // if the ID already exists in state, just return it.
+    if (this.state.id) return this.state.id;
+
+    // ELSE, find the largest ID currently, then return +1.
+    if (this.props.clients.length > 0) {
+      const clientIDs = this.props.clients.map((client)=> {
+        return client.id;
+      })
+
+      console.log('clientIDs', clientIDs)
+      // const cityObj = {...this.state.city};
+      // cityObj.id = Math.max(...cityIDs)+1;
+      // this.setState( { city: cityObj });
+
+      return Math.max(...clientIDs)+1;
+    }
+
+    // only if state is not set AND the cities array is not set yet.
+    return "";
+  }
+
   componentDidMount() {
 
-  }
+    // this.props.getLookup("STATE");
+    // this.props.getLookup("COUNTRY")
 
-  pad(n, width, z) {
-    z = z || "0";
-    n = !n? "0": n + "";
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-  }
-
-  getJobNumber() {
-
-    // Generating the year component
-    const today = new Date();
-    const year = today.getFullYear().toString().slice(-2);
-
-    // Generating the city component: 2 digits
-    const city = this.pad(this.state.city_id,2);
-    // Generating the client component: 3 digits
-    const client = this.pad(this.state.client_id,3);
-
-    // Generating the subdivision component: 3 digits
-    const sub = this.pad(this.state.subdivision_id,3);
-
-    // Generating the counter: 3 digits
-    const prefix = year + city + client + sub;
-    const sequenceObj = this.props.jobnumberseqs.find(seq => seq.prefix == prefix);
-    let counter = "001";
-    if (typeof(sequenceObj) != "undefined") {
-      counter = this.pad(sequenceObj.sequence+1,3);
-    }
-
-    // let jobNumber = year.concat(this.state.city_id > 0? this.pad(this.state.city_id,2):"00")
-    let jobNumber = year + city + client + sub + counter;
-                    // + " 000 000 000";
-    return jobNumber;
   }
 
   render() {
 
-    // const clientList = [
-    //   {id: 1, label: "Chesmar"},
-    //   {id: 2, label: "Lennar"},
-    //   {id: 3, label: "MI"},
-    //   {id: 4, label: "MileStone"},
-    //   {id: 5, label: "MX3"},
-    //   {id: 6, label: "William Lyon"}
-    // ];
+    // console.log("state LOV in render", this.props.stateLookup);
+    // console.log("country LOV in render", this.props.countryLookup);
 
-    const ownerList = [
-      {id: 1, label: "Craig"},
-      {id: 2, label: "Chris"},
-      {id: 3, label: "Merideth"},
-      {id: 4, label: "Ralph"}
-    ];
+    // console.log("Session", this.props.session);
+    const clientObj = {...this.state};
+
+    let myCss;
+
+    // CityList = Current List of cities in the cities table.
+    const ClientList = this.props.clients.map((client, id) => {
+
+      // helps me stripe the rows to  add visible separation.
+      id%2 === 0 ? myCss = "dark-striped" : myCss = "darker-striped";
+  
+      return (
+        <tr key={id} className={myCss}>
+          <td>{client.id}</td>
+          <td>{client.name}</td>
+          <td>{client.full_name}</td>
+          <td>{client.compliance_dl}</td>
+          <td>{client.notes}</td>
+          <td>{client.active}</td>
+          <td>
+            <Button
+              type="button"
+              bsStyle="warning"
+              bsSize="small"
+              block
+              className=""
+              onClick={(e) => {
+                e.preventDefault();
+                clientObj.id = client.id;
+                clientObj.name = client.name;
+                clientObj.full_name = client.full_name;
+                clientObj.compliance_dl = client.compliance_dl;
+                clientObj.notes = client.notes;
+                clientObj.active = client.active;
+                this.setState(clientObj);
+              }}
+            >
+              Edit
+            </Button>
+          </td>
+          <td>
+            <Button
+              type="button"
+              bsStyle="danger"
+              bsSize="small"
+              block
+              className=""
+              onClick={(e) => {
+                e.preventDefault();
+                if (this.props.deleteClient) this.props.deleteClient(client.id);
+              }}
+            >
+              Delete
+            </Button></td>
+        </tr>
+
+      )  // for CityList
+    });  // for map
+
+    console.log("state", this.state);
     // console.log("client: ", this.state.client, this.state.client_id);
     // console.log("owner: ", this.state.owner, this.state.owner_id);
     // console.log("job number", this.state.job_number);
-    console.log("state", this.state);
-    console.log("jobNumber:", this.getJobNumber());
+    // console.log("cities", CityList);
 
+    /* Layout...
+    Grid
+      Column for City maintenance   Column for Subdivision maintenance
+    Close Grid
+    */
+
+    
     return (
-      <Grid fluid className="gridWide fullScreen">
+      <Grid fluid className="">
 
-        <Row className="show-grid">
-          <FormGroup bsSize="large">
-          <Col md={3}>
-            <h1 className="green">CLIENTS</h1>
-          </Col>
+        <h1 className="green">CLIENTS</h1>
 
-          <Col md={3}>
-            <br />
-            <Typeahead
-              onChange={(selected) => {
-                if (selected.length > 0) {
-                  this.setState({ client_id: selected[0].id,
-                    client: selected[0].name
-                  },
-                  () => { this.setState({ job_number: this.getJobNumber() }); }
-                  );
-                }
-              }}
-              labelKey="name"
-              options={this.props.clients}
-              selected={this.state.selected}
-              placeholder="Client"
-            />
-          </Col>
+        <Col md={12}>
+          
+          <form className="container-fluid" onSubmit={(e) => {
+            e.preventDefault();
+            if (this.props.createClient) {
+              clientObj.created_by = this.props.session.id;
+              clientObj.last_updated_by = this.props.session.id;
+              this.setState(clientObj, ()=> {
+                this.props.createClient(this.state)
+                this.setState(this.client_init);
+              });
+            }
+          }}>
+            <h2 className="green">Client Management</h2>
+            <Row>
+              <FormGroup bsSize="large" className="">
+                <Col md={1} className="padding-0">
+                  <FormControl
+                    type="text"
+                    className="required"
+                    placeholder="ID"
+                    disabled
+                    value = {this.state.id?this.state.id:this.getClientID()}
+                  />
+                </Col>
+                <Col md={2} className="padding-0">
+                  <FormControl
+                    type="text"
+                    placeholder="Name"
+                    className="required"
+                    value = {this.state.name?this.state.name:""}
+                    onChange={(e) => {
+                      clientObj.id = this.getClientID();
+                      clientObj.name = e.target.value;
+                      this.setState(clientObj);
+                    }} />
+                </Col>
+                <Col md={3} className="padding-0">
+                <FormControl
+                    type="text"
+                    placeholder="Full Name"
+                    className=""
+                    value = {this.state.full_name?this.state.full_name:""}
+                    onChange={(e) => {
+                      clientObj.full_name = e.target.value;
+                      this.setState(clientObj);
+                    }} />
+                </Col>
+                <Col md={3} className="padding-0">
+                <FormControl
+                    type="text"
+                    placeholder="Compliance DL"
+                    className=""
+                    value = {this.state.compliance_dl?this.state.compliance_dl:""}
+                    onChange={(e) => {
+                      clientObj.compliance_dl = e.target.value;
+                      this.setState(clientObj);
+                    }} />
+                </Col>
+                <Col md={2} className="padding-0">
+                <FormControl
+                    type="text"
+                    placeholder="Notes"
+                    className=""
+                    value = {this.state.notes?this.state.notes:""}
+                    onChange={(e) => {
+                      clientObj.notes = e.target.value;
+                      this.setState(clientObj);
+                    }} />
+                </Col>
+                <Col md={1} className="padding-0">
+                <FormControl
+                    type="text"
+                    placeholder="Active?"
+                    className=""
+                    value = {this.state.active?this.state.active:""}
+                    onChange={(e) => {
+                      clientObj.active = e.target.value;
+                      this.setState(clientObj);
+                    }} />
+                </Col>
+ 
+              </FormGroup>
+            </Row>
+            <Row>
+              <Col md={6} mdOffset={3}>
+              <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Add / Change</Button>
+              </Col>
+            </Row>
+          </form>
 
-          <Col md={3}>
-            <br />
-            <Typeahead
-              onChange={(selected) => {
-                if (selected.length > 0) {
-                  this.setState({ owner_id: selected[0].id,
-                    owner: selected[0].label
-                  });
-                }
-              }}
-              options={ownerList}
-              selected={this.state.selected}
-              placeholder="Owner / Starts Coordinator"
-            />
-          </Col>
+          <h2 className="green">List of Clients</h2>
 
-          <Col md={3}>
-            <br />          
-            <FormControl type="text" placeholder="Job Number" className="required"
-              value = {this.state.job_number} disabled
-             />
-          </Col>
-          </FormGroup>
-        </Row>
+          <Table className="">
+            <thead className="darker-striped">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th> 
+                <th scope="col">Full Name</th>
+                <th scope="col">Compliance DL</th>
+                <th scope="col">Notes</th>
+                <th scope="col">Active?</th>
+                <th scope="col" colSpan="2">Action</th>
 
+              </tr>
+            </thead>
+            <tbody>
+              {ClientList}
+            </tbody>
+          </Table>
 
-        <form className="container-fluid" onSubmit={(e) => {
-          e.preventDefault();
-          if (this.props.createAddress) {
-            this.props.createAddress(this.state);
-          }
-        }}>
-
-          <Row>
-            <Col md={3}>
-              <h2 className="green">Lot Details</h2>
-            </Col>
-            <Col md={3} mdOffset={4}>
-              <h2 className="green">Form Heights</h2>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={3}>
-
-              <Typeahead
-              onChange={(selected) => {
-                if (selected.length > 0) {
-                  this.setState({ subdivision_id: selected[0].id,
-                    subdivision: selected[0].subdivision },
-                    () => { this.setState({ job_number: this.getJobNumber() }); }
-                  );
-                } else {
-                  this.setState({ subdivision_id: null,
-                    subdivision: null },
-                    () => { this.setState({ job_number: this.getJobNumber() }); }
-                  );
-                }
-              }}
-              labelKey="subdivision"
-              options={this.props.subdivisions}
-              selected={this.state.selected}
-              placeholder="Subdivision"
-              />
-              <FormControl type="text" placeholder="Address 1" className="required" onChange={(e) => {
-                this.setState({
-                  address1: e.target.value
-                });
-              }} />
-
-              <Typeahead
-                onChange={(selected) => {
-                  if (selected.length > 0) {
-                    this.setState({ city_id: selected[0].id,
-                      city: selected[0].city },
-                      () => { this.setState({ job_number: this.getJobNumber() }); }
-                    );
-                  }
-                }}
-                labelKey="city"
-                options={this.props.cities}
-                selected={this.state.selected}
-                placeholder="City"
-              />
-
-            </Col>
-
-            <Col md={2}>
-              <FormControl type="text" placeholder="Phase" onChange={(e) => {
-                this.setState({
-                  phase: e.target.value
-                });
-              }} />
-
-              <FormControl type="text" placeholder="Section" onChange={(e) => {
-                this.setState({
-                  section: e.target.value
-                });
-              }} />
-
-              <FormControl type="text" placeholder="Lot" className="required" onChange={(e) => {
-                this.setState({
-                  lot: e.target.value
-                });
-              }} />
-
-              <FormControl type="text" placeholder="Block" className="required" onChange={(e) => {
-                this.setState({
-                  block: e.target.value
-                });
-              }} />
-
-            </Col>
-
-            <Col md={2} mdOffset={2}>
-              <FormControl type="number" placeholder="Front Right (in)" onChange={(e) => {
-                this.setState({
-                  fnd_height_fr: e.target.value
-                });
-              }} />
-
-              <FormControl type="number" placeholder="Front Left (in)" onChange={(e) => {
-                this.setState({
-                  fnd_height_fl: e.target.value
-                });
-              }} />
-
-              <FormControl type="number" placeholder="Rear Right (in)" onChange={(e) => {
-                this.setState({
-                  fnd_height_rr: e.target.value
-                });
-              }} />
-
-              <FormControl type="number" placeholder="Rear Left (in)" onChange={(e) => {
-                this.setState({
-                  fnd_height_rl: e.target.value
-                });
-              }} />
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={3}>
-              <h2 className="green">Design Details</h2>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={3}>
-              <FormControl type="text" placeholder="Plan Type" className="required" onChange={(e) => {
-                this.setState({
-                  plan_type: e.target.value
-                });
-              }} />
-
-              <FormControl type="text" placeholder="Elevation" className="required" onChange={(e) => {
-                this.setState({
-                  elevation: e.target.value
-                });
-              }} />
-
-              <InputGroup>
-                <InputGroup.Addon>Masonry</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="None" className="required" onChange={(e) => {
-                  this.setState({
-                    masonry: e.target.value
-                  });
-                }}>
-                    <option value="0">None</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </FormControl>
-              </InputGroup>
-            </Col>
-
-            <Col md={3}>
-
-              <FormControl type="text" placeholder="Garage Type" onChange={(e) => {
-                this.setState({
-                  garage_type: e.target.value
-                });
-              }} />
-
-              <InputGroup>
-                <InputGroup.Addon>Entry</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="Front" onChange={(e) => {
-                  this.setState({
-                    garage_entry: e.target.value
-                  });
-                }}>
-                    <option value="Front">Front</option>
-                    <option value="Side">Side</option>
-                    <option value="Rear">Rear</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Swing</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="Left" onChange={(e) => {
-                  this.setState({
-                    garage_swing: e.target.value
-                  });
-                }}>
-                    <option value="Left">Left</option>
-                    <option value="Right">Right</option>
-                </FormControl>
-              </InputGroup>
-
-              <FormControl type="number" placeholder="Garage Drop (in)" onChange={(e) => {
-                this.setState({
-                  garage_drop: e.target.value
-                });
-              }} />
-
-              <FormControl type="number" placeholder="Garage Extension (ft)" onChange={(e) => {
-                this.setState({
-                  garage_extension: e.target.value
-                });
-              }} />
-            </Col>
-
-            <Col md={3}>
-              <InputGroup>
-                <InputGroup.Addon>Covered Patio?</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    covered_patio: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Bay Window?</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    bay_window: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Drop Shower?</InputGroup.Addon>
-                <InputGroup.Addon>Master</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    master_shower_drop: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Drop Shower?</InputGroup.Addon>
-                <InputGroup.Addon>Bath 1</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    bath1_shower_drop: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Drop Shower?</InputGroup.Addon>
-                <InputGroup.Addon>Bath 2</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    bath2_shower_drop: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-              <InputGroup>
-                <InputGroup.Addon>Drop Shower?</InputGroup.Addon>
-                <InputGroup.Addon>Bath 3</InputGroup.Addon>
-                <FormControl componentClass="select" placeholder="No" onChange={(e) => {
-                  this.setState({
-                    bath3_shower_drop: e.target.value
-                  });
-                }}>
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                </FormControl>
-              </InputGroup>
-
-            </Col>
-
-            <Col md={3}>
-              <FormControl rows="4" componentClass="textarea" placeholder="Additional Options" onChange={(e) => {
-                this.setState({
-                  additional_options: e.target.value
-                });
-              }} />
-
-              <FormControl rows="4" componentClass="textarea" placeholder="Notes / Comments" onChange={(e) => {
-                this.setState({
-                  comments: e.target.value
-                });
-              }} />
-
-            </Col>
-          </Row>
-
-          <Row>
-            <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Create!</Button>
-          </Row>
-
-        </form>
+        </Col>
 
       </Grid>
     );
   }
 
 }
-export default (CreateStart);
-
-
-/* <FormControl type="number" placeholder="Job Number" className="required" onChange={(e) => {
-  this.setState({
-    job_number: e.target.value
-  });
-}} /> */
+export default (Client);

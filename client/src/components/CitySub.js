@@ -26,6 +26,55 @@ class CitySub extends Component {
       }
     }
 
+    this.city_init = {...this.state.city};
+    this.sub_init = {...this.state.subdivision};
+
+  }
+
+  getCityID() {
+    
+    // if the ID already exists in state, just return it.
+    if (this.state.city.id) return this.state.city.id;
+
+    // ELSE, find the largest ID currently, then return +1.
+    if (this.props.cities.length > 0) {
+      const cityIDs = this.props.cities.map((city)=> {
+        return city.id;
+      })
+
+      console.log('cityIDs', cityIDs)
+      // const cityObj = {...this.state.city};
+      // cityObj.id = Math.max(...cityIDs)+1;
+      // this.setState( { city: cityObj });
+
+      return Math.max(...cityIDs)+1;
+    }
+
+    // only if state is not set AND the cities array is not set yet.
+    return "";
+  }
+
+  getSubID() {
+    
+    // if the ID already exists in state, just return it.
+    if (this.state.subdivision.id) return this.state.subdivision.id;
+
+    // ELSE, find the largest ID currently, then return +1.
+    if (this.props.subdivisions.length > 0) {
+      const subIDs = this.props.subdivisions.map((sub)=> {
+        return sub.id;
+      })
+
+      console.log('cityIDs', subIDs)
+      // const cityObj = {...this.state.city};
+      // cityObj.id = Math.max(...cityIDs)+1;
+      // this.setState( { city: cityObj });
+
+      return Math.max(...subIDs)+1;
+    }
+
+    // only if state is not set AND the subdivisions array is not set yet.
+    return "";
   }
 
   componentDidMount() {
@@ -52,12 +101,14 @@ class CitySub extends Component {
 
     let myCss;
 
+    // CityList = Current List of cities in the cities table.
     const CityList = this.props.cities.map((city, id) => {
 
+      // helps me stripe the rows to  add visible separation.
       id%2 === 0 ? myCss = "dark-striped" : myCss = "darker-striped";
   
       return (
-        <tr key={id} className={myCss}>
+        <tr key={id} className="">
           <td>{city.id}</td>
           <td>{city.city}</td>
           <td>{city.state_prov}</td>
@@ -99,12 +150,13 @@ class CitySub extends Component {
             </Button></td>
         </tr>
 
-      )
-    });
+      )  // for CityList
+    });  // for map
 
+    // SubdivisionList = Current List of subdivisions in the subdivisions table.
     const SubdivisionList = this.props.subdivisions.map((sub, id) => {
 
-      // var myCss;
+      // helps me stripe the rows to  add visible separation.
       id%2 === 0 ? myCss = "dark-striped" : myCss = "darker-striped";
   
       return (
@@ -147,15 +199,22 @@ class CitySub extends Component {
             </Button></td>
         </tr>
 
-      )
+      )  // for SubdivisionList
+    }); // for map
 
-    });
+    console.log("state", this.state);
     // console.log("client: ", this.state.client, this.state.client_id);
     // console.log("owner: ", this.state.owner, this.state.owner_id);
     // console.log("job number", this.state.job_number);
-    console.log("state", this.state);
     // console.log("cities", CityList);
 
+    /* Layout...
+    Grid
+      Column for City maintenance   Column for Subdivision maintenance
+    Close Grid
+    */
+
+    
     return (
       <Grid fluid className="altBkg">
 
@@ -163,83 +222,84 @@ class CitySub extends Component {
 
         <Col md={6}>
           
-        <form className="container-fluid" onSubmit={(e) => {
-          e.preventDefault();
-          if (this.props.createCity) {
-            cityObj.created_by = this.props.session.id;
-            cityObj.last_updated_by = this.props.session.id;
-            this.setState({city: cityObj }, ()=> {
-              this.props.createCity(this.state.city);
-            });
-          }
-        }}>
-          <h2 className="green">City Management</h2>
-          <Row>
-            <FormGroup bsSize="large" className="">
-              <Col md={1} className="padding-0">
-                <FormControl
-                  type="text"
-                  className="required"
-                  disabled
-                  placeholder="ID"
-                  value = {this.state.city.id?this.state.city.id:""}
-                />
-              </Col>
-              <Col md={4} className="padding-0">
-                <FormControl
-                  type="text"
-                  placeholder="City"
-                  className="required"
-                  value = {this.state.city.city?this.state.city.city:""}
-                  onChange={(e) => {
-                    cityObj.city = e.target.value;
-                    this.setState({ city: cityObj });
-                  }} />
-              </Col>
-              <Col md={3} className="padding-0">
-                <Typeahead
-                  onChange={(selected) => {
-                    if (selected.length > 0) {
-                      cityObj.state_prov = selected[0].code;
-                      cityObj.state_prov_long = selected[0].name;
+          <form className="container-fluid" onSubmit={(e) => {
+            e.preventDefault();
+            if (this.props.createCity) {
+              cityObj.created_by = this.props.session.id;
+              cityObj.last_updated_by = this.props.session.id;
+              this.setState({city: cityObj }, ()=> {
+                this.props.createCity(this.state.city)
+                this.setState({ city: this.city_init });
+              });
+            }
+          }}>
+            <h2 className="green">City Management</h2>
+            <Row>
+              <FormGroup bsSize="large" className="">
+                <Col md={2} className="padding-0">
+                  <FormControl
+                    type="text"
+                    className="required"
+                    placeholder="ID"
+                    disabled
+                    value = {this.state.city.id?this.state.city.id:this.getCityID()}
+                  />
+                </Col>
+                <Col md={4} className="padding-0">
+                  <FormControl
+                    type="text"
+                    placeholder="City"
+                    className="required"
+                    value = {this.state.city.city?this.state.city.city:""}
+                    onChange={(e) => {
+                      cityObj.id = this.getCityID();
+                      cityObj.city = e.target.value;
                       this.setState({ city: cityObj });
-                    }
-                  }}
-                  labelKey="name"
-                  options={this.props.stateLookup}
-                  selected={this.state.selected}
-                  placeholder="State"
-                  selected= {this.state.city.id?[{name: this.state.city.state_prov_long}]:this.state.selected}
-                />
+                    }} />
+                </Col>
+                <Col md={3} className="padding-0">
+                  <Typeahead
+                    onChange={(selected) => {
+                      if (selected.length > 0) {
+                        cityObj.state_prov = selected[0].code;
+                        cityObj.state_prov_long = selected[0].name;
+                        this.setState({ city: cityObj });
+                      }
+                    }}
+                    labelKey="name"
+                    options={this.props.stateLookup}
+                    placeholder="State"
+                    selected= {this.state.city.state_prov?[{name: this.state.city.state_prov_long}]:this.state.selected}
+                  />
+                </Col>
+                <Col md={3} className="padding-0">
+                  <Typeahead
+                    onChange={(selected) => {
+                      if (selected.length > 0) {
+                        cityObj.country = selected[0].code;
+                        cityObj.country_long = selected[0].name;
+                        this.setState({ city: cityObj });
+                      }
+                    }}
+                    labelKey="name"
+                    options={this.props.countryLookup}
+                    placeholder="Country"
+                    selected= {this.state.city.country?[{name: this.state.city.country_long}]:this.state.selected}
+                  />
+                </Col>
+              </FormGroup>
+            </Row>
+            <Row>
+              <Col md={6} mdOffset={3}>
+              <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Add / Change</Button>
               </Col>
-              <Col md={4} className="padding-0">
-                <Typeahead
-                  onChange={(selected) => {
-                    if (selected.length > 0) {
-                      cityObj.country = selected[0].code;
-                      cityObj.country_long = selected[0].name;
-                      this.setState({ city: cityObj });
-                    }
-                  }}
-                  labelKey="name"
-                  options={this.props.countryLookup}
-                  placeholder="Country"
-                  selected= {this.state.city.id?[{name: this.state.city.country_long}]:this.state.selected}
-                />
-              </Col>
-            </FormGroup>
-          </Row>
-          <Row>
-            <Col md={6} mdOffset={3}>
-            <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Add / Change</Button>
-            </Col>
-          </Row>
-        </form>
+            </Row>
+          </form>
 
           <h2 className="green">List of Cities</h2>
 
           <Table className="">
-            <thead className="darker-striped">
+            <thead className="">
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">City</th> 
@@ -264,19 +324,20 @@ class CitySub extends Component {
               subObj.last_updated_by = this.props.session.id;
               this.setState({subdivision: subObj }, ()=> {
                 this.props.createSubdivision(this.state.subdivision);
+                this.setState({ subdivision: this.sub_init });
               });
             }
           }}>
 
             <Row>
               <FormGroup bsSize="large" className="">
-                <Col md={1} className="padding-0">
+                <Col md={2} className="padding-0">
                   <FormControl
                     type="text"
                     className="required"
                     placeholder="ID"
                     disabled
-                    value = {this.state.subdivision.id?this.state.subdivision.id:""}
+                    value = {this.state.subdivision.id?this.state.subdivision.id:this.getSubID()}
                   />
                 </Col>
                 <Col md={4} className="padding-0">
@@ -286,6 +347,7 @@ class CitySub extends Component {
                     className="required"
                     value = {this.state.subdivision.subdivision?this.state.subdivision.subdivision:""}
                     onChange={(e) => {
+                      subObj.id = this.getSubID();
                       subObj.subdivision = e.target.value;
                       this.setState({ subdivision: subObj });
                     }} />
@@ -338,10 +400,3 @@ class CitySub extends Component {
 
 }
 export default (CitySub);
-
-
-/* <FormControl type="number" placeholder="Job Number" className="required" onChange={(e) => {
-  this.setState({
-    job_number: e.target.value
-  });
-}} /> */

@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
-import JobNumberSeq from "../components/JobNumberSeq";
-import { createJobNumberSeq, deleteJobNumberSeq } from "../actions";
+import GetNextJobNumber from "../components/GetNextJobNumber";
+import { createJobNumberSeq } from "../actions";
 
 function mapStateToProps(state) {
   return {
@@ -16,11 +16,8 @@ function mapDispatchToProps(dispatch) {
   return {
     createJobNumberSeq: (jobNumberSeq)=> {
       dispatch(createJobNumberSeq(jobNumberSeq));
-    },
-    deleteJobNumberSeq: (id)=> {
-      dispatch(deleteJobNumberSeq(id));
     }
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(JobNumberSeq);
+export default connect(mapStateToProps, mapDispatchToProps)(GetNextJobNumber);

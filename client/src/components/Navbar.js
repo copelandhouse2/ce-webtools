@@ -40,6 +40,9 @@ function theNavbar(props) {
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem eventKey={2.2}>
+                    <Link to={`/getnextjobnumber`}> Next Job Number </Link>
+                </MenuItem>
+                <MenuItem eventKey={2.3}>
                     <Link to={`/create`}> Insert Start </Link>
                 </MenuItem>
             </NavDropdown>
