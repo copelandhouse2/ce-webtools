@@ -313,13 +313,13 @@ export function getLookup(type) {
   };
 }
 function lookupLoaded(lookupList, type) {
-  if (type == 'STATE') {
+  if (type === 'STATE') {
     return {
       type: "STATELOOKUP_LOADED",
       value: lookupList
     };
   }
-  if (type == 'COUNTRY') {
+  if (type === 'COUNTRY') {
     return {
       type: "COUNTRYLOOKUP_LOADED",
       value: lookupList

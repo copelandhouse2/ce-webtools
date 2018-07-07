@@ -4,6 +4,7 @@ import { createAddress } from "../actions";
 
 function mapStateToProps(state) {
   return {
+    session: state.session,
     clients: state.clients,
     cities: state.cities,
     subdivisions: state.subdivisions,

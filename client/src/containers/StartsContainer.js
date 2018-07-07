@@ -4,6 +4,7 @@ import { deleteAddress } from "../actions";
 
 function mapStateToProps(state) {
   return {
+    session: state.session,
     addresses: state.addresses
 
   };

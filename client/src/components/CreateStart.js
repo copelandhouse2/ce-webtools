@@ -41,7 +41,13 @@ class CreateStart extends Component {
       bath2_shower_drop: "",
       bath3_shower_drop: "",
       additional_options: "",
-      comments: ""
+      comments: "",
+      created_by: null,
+      last_updated_by: null,
+      sequence_id: null,
+      prefix: "",
+      sequence: null,
+      year: null
     }
     this.stagedStarts = [];
   }
@@ -59,7 +65,7 @@ class CreateStart extends Component {
 
     // Generating the year component
     const today = new Date();
-    const year = today.getFullYear().toString().slice(-2);
+    const year2D = today.getFullYear().toString().slice(-2);
 
     // Generating the city component: 2 digits
     const city = this.pad(this.state.city_id,2);
@@ -70,17 +76,31 @@ class CreateStart extends Component {
     const sub = this.pad(this.state.subdivision_id,3);
 
     // Generating the counter: 3 digits
-    const prefix = year + city + client + sub;
+    const prefix = year2D + city + client + sub;
     const sequenceObj = this.props.jobnumberseqs.find(seq => seq.prefix == prefix);
-    let counter = "001";
+    // let counter = "001";
     if (typeof(sequenceObj) != "undefined") {
-      counter = this.pad(sequenceObj.sequence+1,3);
+      return {
+        sequence_id: sequenceObj.id,
+        sequence: sequenceObj.sequence + 1,
+        year: sequenceObj.year,
+        prefix: sequenceObj.prefix,
+        job_number: sequenceObj.prefix+this.pad(sequenceObj.sequence+1,3)
+      }
+        // counter = this.pad(sequenceObj.sequence+1,3);
     }
 
-    // let jobNumber = year.concat(this.state.city_id > 0? this.pad(this.state.city_id,2):"00")
-    let jobNumber = year + city + client + sub + counter;
+    return {
+      sequence_id: null,
+      sequence: 1,
+      year: today.getFullYear(),
+      prefix: prefix,
+      job_number: prefix+this.pad(1,3)
+    }
+    // let jobNumber = year2D.concat(this.state.city_id > 0? this.pad(this.state.city_id,2):"00")
+    // let jobNumber = year2D + city + client + sub + counter;
                     // + " 000 000 000";
-    return jobNumber;
+    // return jobNumber;
   }
 
   render() {
@@ -107,7 +127,7 @@ class CreateStart extends Component {
     console.log("jobNumber:", this.getJobNumber());
 
     return (
-      <Grid fluid className="gridWide fullScreen">
+      <Grid fluid className="gridNarrow fullScreen">
 
         <Row className="show-grid">
           <FormGroup bsSize="large">
@@ -123,16 +143,24 @@ class CreateStart extends Component {
                   this.setState({ client_id: selected[0].id,
                     client: selected[0].name
                   },
-                  () => { this.setState({ job_number: this.getJobNumber() }); }
+                    () => {
+                      const seqObj = this.getJobNumber();
+                      this.setState({ sequence_id: seqObj.sequence_id,
+                        sequence: seqObj.sequence,
+                        year: seqObj.year,
+                        prefix: seqObj.prefix,
+                        job_number: seqObj.job_number
+                      });
+                    }
                   );
                 }
               }}
-              labelKey="name"
-              options={this.props.clients}
-              selected={this.state.selected}
-              placeholder="Client"
-            />
-          </Col>
+            labelKey="name"
+            options={this.props.clients}
+            selected={this.state.selected}
+            placeholder="Client"
+          />
+        </Col>
 
           <Col md={3}>
             <br />
@@ -163,7 +191,11 @@ class CreateStart extends Component {
         <form className="container-fluid" onSubmit={(e) => {
           e.preventDefault();
           if (this.props.createAddress) {
-            this.props.createAddress(this.state);
+            this.setState({ created_by: this.props.session.id,
+              last_updated_by: this.props.session.id }, ()=> {
+                this.props.createAddress(this.state);
+              }
+            );   
           }
         }}>
 
@@ -184,12 +216,28 @@ class CreateStart extends Component {
                 if (selected.length > 0) {
                   this.setState({ subdivision_id: selected[0].id,
                     subdivision: selected[0].subdivision },
-                    () => { this.setState({ job_number: this.getJobNumber() }); }
+                    () => {
+                      const seqObj = this.getJobNumber();
+                      this.setState({ sequence_id: seqObj.sequence_id,
+                        sequence: seqObj.sequence,
+                        year: seqObj.year,
+                        prefix: seqObj.prefix,
+                        job_number: seqObj.job_number
+                      });
+                    }
                   );
                 } else {
                   this.setState({ subdivision_id: null,
                     subdivision: null },
-                    () => { this.setState({ job_number: this.getJobNumber() }); }
+                    () => {
+                      const seqObj = this.getJobNumber();
+                      this.setState({ sequence_id: seqObj.sequence_id,
+                        sequence: seqObj.sequence,
+                        year: seqObj.year,
+                        prefix: seqObj.prefix,
+                        job_number: seqObj.job_number
+                      });
+                    }
                   );
                 }
               }}
@@ -209,7 +257,15 @@ class CreateStart extends Component {
                   if (selected.length > 0) {
                     this.setState({ city_id: selected[0].id,
                       city: selected[0].city },
-                      () => { this.setState({ job_number: this.getJobNumber() }); }
+                      () => {
+                        const seqObj = this.getJobNumber();
+                        this.setState({ sequence_id: seqObj.sequence_id,
+                          sequence: seqObj.sequence,
+                          year: seqObj.year,
+                          prefix: seqObj.prefix,
+                          job_number: seqObj.job_number
+                        });
+                      }
                     );
                   }
                 }}

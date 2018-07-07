@@ -9,6 +9,7 @@ import ClientContainer from "./containers/ClientContainer";
 import CitySubContainer from "./containers/CitySubContainer";
 import JobNumberSeqContainer from "./containers/JobNumberSeqContainer";
 import GetNextJobNumberContainer from "./containers/GetNextJobNumberContainer";
+// import SignUpSignInContainer from "./containers/SignUpSignInContainer";
 
 
 class App extends Component {
@@ -24,32 +25,39 @@ class App extends Component {
   }
 
   render() {
-
-    // console.log("session values", this.props.session);
-    // console.log("city values", this.props.cities);
-    // console.log("client values", this.props.clients);
-    // console.log("subdivision values", this.props.subdivisions);
-    // console.log("job number sequences", this.props.jobnumberseqs);
+    if (true) {
+      return (
+        // console.log("session values", this.props.session);
+        // console.log("city values", this.props.cities);
+        // console.log("client values", this.props.clients);
+        // console.log("subdivision values", this.props.subdivisions);
+        // console.log("job number sequences", this.props.jobnumberseqs);
     
-    return (
-      <div id="gradient">
-        <BrowserRouter>
-          <div>
-            <Navbar />
-            <Switch>
-              <Route path="/create" component={CreateStartContainer} />
-              <Route path="/starts" component={StartsContainer} />
-              <Route path="/clients" component={ClientContainer} />
-              <Route path="/citySubs" component={CitySubContainer} />
-              <Route path="/jobNumberSeqs" component={JobNumberSeqContainer} />
-              <Route path="/getnextjobnumber" component={GetNextJobNumberContainer} />
+        <div id="gradient">
+          <BrowserRouter>
+            <div>
+              <Navbar />
+              <Switch>
+                <Route path="/create" component={CreateStartContainer} />
+                <Route path="/starts" component={StartsContainer} />
+                <Route path="/clients" component={ClientContainer} />
+                <Route path="/citySubs" component={CitySubContainer} />
+                <Route path="/jobNumberSeqs" component={JobNumberSeqContainer} />
+                <Route path="/getnextjobnumber" component={GetNextJobNumberContainer} />
+  
+              </Switch>
+            </div>
+          </BrowserRouter>
+  
+        </div>
+      );
+    }  // IF statement
 
-            </Switch>
-          </div>
-        </BrowserRouter>
-
-      </div>
-    );
+    // return (
+    //   <div>
+    //     <SignUpSignInContainer />
+    //   </div>
+    // )
   }
 
 }

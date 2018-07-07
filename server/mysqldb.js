@@ -1,5 +1,7 @@
 import mysql from "mysql";
 import async from "async";
+import { env } from "./envVars";
+
 
 const PROD_DB = "copelandeng";
 const TEST_DB = "copelandeng";
@@ -14,9 +16,9 @@ const state = {
 
 export const connect = (mode, done) => {
   state.pool = mysql.createPool({
-    host: "127.0.0.1",
-    user: "ceadmin",
-    password: "Cmc131313",
+    host: env.HOST,
+    user: env.DBUSER,
+    password: env.DBPASSWORD,
     database: mode === PROD_MODE ? PROD_DB : TEST_DB
   });
 

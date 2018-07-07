@@ -128,7 +128,7 @@ class Client extends Component {
 
     
     return (
-      <Grid fluid className="">
+      <Grid className="GridNarrow">
 
         <h1 className="green">CLIENTS</h1>
 

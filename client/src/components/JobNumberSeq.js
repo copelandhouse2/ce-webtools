@@ -39,7 +39,7 @@ class JobNumberSeq extends Component {
     n = !n? "0": n + "";
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
-
+  
   getJobNumber() {
 
     // Generating the year component
@@ -182,7 +182,7 @@ class JobNumberSeq extends Component {
     // console.log("cities", CityList);
 
     return (
-      <Grid fluid className="">
+      <Grid className="gridNarrow">
         <h1 className="green">JOB NUMBER SEQUENCES</h1>
 
         <Col md={12}>

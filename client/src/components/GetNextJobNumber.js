@@ -203,7 +203,7 @@ class GetNextJobNumber extends Component {
               </FormGroup>
             <Row>
               <Col md={4} mdOffset={2}>
-              <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Save?</Button>
+              <Button type="submit" bsStyle="primary" bsSize="large" block className="ce-top-margin-20">Save</Button>
               </Col>
               <Col md={4}>
               <Button type="button"

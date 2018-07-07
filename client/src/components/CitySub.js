@@ -108,7 +108,7 @@ class CitySub extends Component {
       id%2 === 0 ? myCss = "dark-striped" : myCss = "darker-striped";
   
       return (
-        <tr key={id} className="">
+        <tr key={id} className={myCss}>
           <td>{city.id}</td>
           <td>{city.city}</td>
           <td>{city.state_prov}</td>
@@ -160,7 +160,7 @@ class CitySub extends Component {
       id%2 === 0 ? myCss = "dark-striped" : myCss = "darker-striped";
   
       return (
-        <tr key={id} className="">
+        <tr key={id} className={myCss}>
           <td>{sub.id}</td>
           <td>{sub.subdivision}</td>
           <td>{sub.city}</td>
@@ -216,7 +216,7 @@ class CitySub extends Component {
 
     
     return (
-      <Grid fluid className="altBkg">
+      <Grid className="gridNarrow">
 
         <h1 className="green">CITIES AND SUBDIVISIONS</h1>
 
@@ -299,7 +299,7 @@ class CitySub extends Component {
           <h2 className="green">List of Cities</h2>
 
           <Table className="">
-            <thead className="">
+            <thead className="darker-striped">
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">City</th> 
@@ -378,8 +378,8 @@ class CitySub extends Component {
 
           <h2 className="green">List of Subdivisions</h2>
 
-          <Table striped hover>
-            <thead className="">
+          <Table>
+            <thead className="darker-striped">
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Subdivision</th> 

@@ -1,6 +1,7 @@
 import express from "express";
 // import mongoose from "mongoose";
 import { TEST_MODE, PROD_MODE, connect } from "./mysqldb";
+import { TEST, PROD, tconnect } from "./trello";
 import SessionRoutes from "./routes/SessionRoutes";
 import StartRoutes from "./routes/StartRoutes";
 import ClientRoutes from "./routes/ClientRoutes";
@@ -9,6 +10,7 @@ import SubdivisionRoutes from "./routes/SubdivisionRoutes";
 import JobNumberSeqRoutes from "./routes/JobNumberSeqRoutes";
 import LookupRoutes from "./routes/LookupRoutes";
 import bodyParser from "body-parser";
+import path from "path";
 
 // MongoDB connection
 // mongoose.set("debug", true);
@@ -23,8 +25,19 @@ connect(TEST_MODE, function(err) {
   }
 });
 
+tconnect(TEST, function(err) {
+  if(!err) {
+    console.log("Trello is connected ... \n\n");  
+  } else {
+    console.log("Error connecting database ... \n\n");
+  }
+});
+
 const app = express();
 app.use(bodyParser.json());
+
+const wwwPath = path.join(__dirname, "www");
+app.use("/", express.static(wwwPath));
 
 app.use(SessionRoutes);
 app.use(StartRoutes);
